@@ -1,0 +1,21 @@
+services:
+  scoreboard:
+    build: scoreboard
+    ports: 
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+  
+  tester:
+    build: src
+    environment:
+      - scoreboard-url=http://scoreboard:8000
+    depends_on:
+      scoreboard:
+        condition: service_healthy
+    links:
+      - scoreboard
